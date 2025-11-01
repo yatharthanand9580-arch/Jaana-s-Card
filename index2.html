@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>For Jaana — A Comfort Card</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@400;700&family=Poppins:wght@400;600;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --pink-1:#ffe6f2;
+    --pink-2:#ffcde1;
+    --glow: 0 8px 30px rgba(255,140,180,0.18);
+    --card-radius:18px;
+    --max-width:720px;
+  }
+
+  html,body{
+    height:100%;
+    margin:0;
+    font-family:"Poppins", "Quicksand", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background:linear-gradient(180deg,var(--pink-1),#fff);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  /* Container (centered) */
+  .wrap{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    box-sizing:border-box;
+  }
+
+  .card{
+    width:100%;
+    max-width:var(--max-width);
+    background:transparent;
+    border-radius:20px;
+    position:relative;
+    overflow:visible;
+    text-align:center;
+    padding:22px;
+    box-sizing:border-box;
+  }
+
+  /* Soft glow behind text for readability */
+  .scene {
+    background: linear-gradient(180deg, rgba(255,248,250,0.6), rgba(255,245,247,0.35));
+    border-radius:20px;
+    padding:22px;
+    box-sizing:border-box;
+    min-height:60vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    transition:background 450ms ease;
+    box-shadow: var(--glow);
+    backdrop-filter: blur(6px);
+  }
+
+  /* Page elements */
+  .main-text {
+    font-family:"Great Vibes", "Dancing Script", cursive;
+    font-size:28px;
+    color:#7b2746;
+    line-height:1.1;
+    margin:8px 0 14px;
+    opacity:0;
+    transform:translateY(8px);
+    transition:all 450ms ease;
+    text-shadow: 0 4px 12px rgba(255,235,245,0.6);
+  }
+
+  .sub-text{
+    font-size:15px;
+    color:#6b3650;
+    margin:6px 0 16px;
+    opacity:0;
+    transform:translateY(8px);
+    transition:all 420ms ease;
+  }
+
+  .show { opacity:1; transform:none; }
+
+  /* Heartbeat buttons */
+  .btn-row { display:flex; gap:12px; justify-content:center; margin-top:10px; flex-wrap:wrap; }
+  .btn {
+    min-width:120px;
+    padding:12px 18px;
+    border-radius:40px;
+    border:none;
+    outline:none;
+    cursor:pointer;
+    font-weight:600;
+    font-family:"Poppins", "Quicksand", sans-serif;
+    box-shadow: var(--glow);
+    transform-origin:center;
+    transition:transform 220ms ease, box-shadow 220ms ease;
+    background:linear-gradient(180deg,#ff9fc9,#ff6fa6);
+    color:white;
+    letter-spacing:0.2px;
+  }
+  .btn.ghost { background:linear-gradient(180deg,#ffd9e8,#ffecf4); color:#7b2746; box-shadow:none; border:1px solid rgba(123,39,70,0.06); }
+
+  /* heartbeat animation */
+  .btn.heartbeat {
+    animation:heartbeat 1.4s ease-in-out infinite;
+  }
+  @keyframes heartbeat{
+    0%{ transform:scale(1) }
+    25%{ transform:scale(1.05) }
+    50%{ transform:scale(0.98) }
+    70%{ transform:scale(1.03) }
+    100%{ transform:scale(1) }
+  }
+
+  /* small GIF area */
+  .gif {
+    width:120px;
+    height:120px;
+    border-radius:14px;
+    overflow:hidden;
+    background:linear-gradient(180deg,#fff5f8,#fff0f5);
+    display:inline-block;
+    box-shadow:0 8px 25px rgba(255,150,180,0.08);
+    margin:8px;
+    flex:0 0 auto;
+  }
+  .gif img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  /* floating hearts/particles */
+  .particle-wrap{ position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:1; }
+  .heart{
+    position:absolute;
+    width:18px;
+    height:18px;
+    opacity:0.9;
+    transform-origin:center;
+    filter:drop-shadow(0 6px 12px rgba(255,150,170,0.12));
+    animation:floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0%{ transform:translateY(0) scale(0.92); opacity:0 }
+    10%{ opacity:1 }
+    100%{ transform:translateY(-160vh) scale(1.05); opacity:0 }
+  }
+
+  /* falling cherry blossom petals */
+  .petal {
+    position:fixed;
+    top:-10vh;
+    left:0;
+    width:18px;
+    height:18px;
+    pointer-events:none;
+    opacity:0.95;
+    transform-origin:center;
+    animation:fall linear infinite;
+    z-index:0;
+    mix-blend-mode: screen;
+  }
+  @keyframes fall {
+    0%{ transform:translateY(-10vh) rotate(0deg) }
+    100%{ transform:translateY(110vh) rotate(360deg) }
+  }
+
+  /* envelope scene */
+  .envelope-scene { display:flex; align-items:center; justify-content:center; gap:18px; flex-direction:column; }
+  .envelope {
+    width:220px;
+    height:140px;
+    border-radius:12px;
+    background:linear-gradient(180deg,#fff2f6,#fff9fb);
+    box-shadow:0 18px 40px rgba(203,70,120,0.12), 0 2px 6px rgba(0,0,0,0.05);
+    position:relative;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:transform 420ms cubic-bezier(.2,.9,.3,1);
+  }
+  .envelope:hover{ transform:translateY(-6px) scale(1.01); }
+  .envelope::before{
+    content:"";
+    position:absolute;
+    width:0;height:0;
+    left:0;right:0;margin:auto;
+    top:8px;
+    border-left:110px solid transparent;
+    border-right:110px solid transparent;
+    border-bottom:48px solid rgba(255,190,205,0.95);
+    border-radius:6px;
+    transform-origin:top center;
+    transition:transform 450ms ease;
+  }
+  .envelope.open::before{ transform:translateY(-28px) rotateX(180deg); }
+
+  .card-inside {
+    width:86%;
+    height:74%;
+    background:linear-gradient(180deg,#fff,#fff9fb);
+    border-radius:10px;
+    box-shadow:inset 0 -6px 20px rgba(255,190,220,0.06);
+    padding:12px;
+    box-sizing:border-box;
+    opacity:0;
+    transform:translateY(10px) scale(.98);
+    transition:all 420ms ease;
+  }
+  .envelope.open .card-inside { opacity:1; transform:translateY(-6px) scale(1); }
+
+  .letter-line {
+    font-family:"Dancing Script","Great Vibes",cursive;
+    font-size:16px;
+    color:#7b2746;
+    margin:8px 0;
+    opacity:0;
+    transform:translateY(6px);
+  }
+
+  /* Photo floating frame */
+  .photo {
+    width:220px;
+    height:140px;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 18px 30px rgba(200,90,130,0.12);
+    border:6px solid rgba(255,245,248,0.8);
+    transform:translateY(0);
+    transition:transform 420ms ease;
+  }
+  .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  /* replay button */
+  .small {
+    font-size:13px;
+    padding:8px 12px;
+    border-radius:28px;
+    background:linear-gradient(180deg,#ffd7ea,#ffb3d9);
+    border:none;
+    color:#7b2746;
+    box-shadow:var(--glow);
+  }
+
+  /* Responsive tweaks */
+  @media (max-width:520px){
+    .main-text{ font-size:24px; }
+    .gif{ width:72px; height:72px; }
+    .envelope{ width:180px; height:120px; }
+    .photo{ width:180px; height:110px; }
+  }
+
+  /* tap sound hint */
+  .tap-hint{ font-size:12px; color:#8b5f78; margin-top:8px; opacity:0.9; }
+
+  /* tiny sparkle effect on text (optional) */
+  .sparkle{
+    display:inline-block;
+    filter: drop-shadow(0 8px 18px rgba(255,200,230,0.3));
+    animation:glow 2.2s linear infinite;
+  }
+  @keyframes glow {
+    0%{ transform:scale(1); opacity:0.9 }
+    50%{ transform:scale(1.04); opacity:1 }
+    100%{ transform:scale(1); opacity:0.9}
+  }
+</style>
+</head>
+<body>
+
+<div class="particle-wrap" aria-hidden="true"></div>
+<!-- petals (will be created by JS) -->
+<div class="wrap">
+  <div class="card" role="main" aria-live="polite">
+    <div id="scene" class="scene">
+
+      <!-- Page 1: Greeting -->
+      <div id="page1" class="page page-visible">
+        <div class="particle-wrap" style="z-index:2;"></div>
+        <div class="gif" style="position:absolute; left:18px; top:18px;">
+          <!-- Replace: assets/bear_wave.gif -->
+          <img src="assets/bear_wave.gif" alt="waving bear" onerror="this.style.visibility='hidden'">
+        </div>
+
+        <div id="greetingWrap">
+          <div id="greetText" class="main-text">Are you in pain, Jaana? 🥺💖</div>
+          <div id="greetSub" class="sub-text">Tap an option — I'm right here for you.</div>
+
+          <div class="btn-row" style="margin-top:18px;">
+            <button id="btnYes" class="btn heartbeat">Yes 💔</button>
+            <button id="btnNo" class="btn ghost heartbeat">No 💖</button>
+          </div>
+          <div class="tap-hint">Tap anywhere or press a button to continue</div>
+        </div>
+      </div>
+
+      <!-- Page 2: She's okay -->
+      <div id="page2" class="page" style="display:none;">
+        <div style="display:flex; align-items:center; gap:12px; justify-content:center; flex-direction:column;">
+          <div class="main-text" id="okText">Really? 😍 I'm so happy to know you're okay, Jaana!</div>
+          <div class="sub-text">But if you feel pain later… just tap the screen, okay? 💗</div>
+          <div class="gif"><img src="assets/bear_dance.gif" alt="dancing bear" onerror="this.style.visibility='hidden'"></div>
+        </div>
+      </div>
+
+      <!-- Page 3: She's in pain -->
+      <div id="page3" class="page" style="display:none;">
+        <div style="display:flex;align-items:center;gap:14px;flex-direction:column;">
+          <div class="main-text" id="painText" style="font-size:26px;">It's okay, Jaana 💞</div>
+          <div class="sub-text">I wish I could hug you tight right now 🤗🧸</div>
+          <div class="gif"><img src="assets/bear_hug.gif" alt="hugging bear" onerror="this.style.visibility='hidden'"></div>
+        </div>
+      </div>
+
+      <!-- Page 4: Emotional Comfort -->
+      <div id="page4" class="page" style="display:none;">
+        <div style="display:flex;align-items:center;gap:16px;flex-direction:column;">
+          <div class="main-text" id="comfortLine1">Remember, I'm always with you ❤️</div>
+          <div class="sub-text" id="comfortLine2">I know I'm not there beside you right now…</div>
+          <div class="sub-text" id="comfortLine3">So, take a pillow and cuddle it — imagine me there with you, near you, in your arms 💋</div>
+          <div class="sub-text" id="comfortLine4">If that doesn't help, imagine our marriage and our cute daughter 💞</div>
+          <div class="photo" aria-hidden="false" style="margin-top:14px;">
+            <!-- Replace: assets/together_photo.jpg -->
+            <img src="assets/together_photo.jpg" alt="Photo together" onerror="this.style.visibility='hidden'">
+          </div>
+        </div>
+      </div>
+
+      <!-- Page 5: Checking feelings -->
+      <div id="page5" class="page" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;flex-direction:column;">
+          <div class="main-text">Now… how are you feeling, Darling? 💗</div>
+          <div class="btn-row" style="margin-top:10px;">
+            <button id="btnBetter" class="btn heartbeat">Better 💖</button>
+            <button id="btnStill" class="btn ghost heartbeat">Still not 💔</button>
+          </div>
+          <div class="gif"><img src="assets/bear_concern.gif" alt="concerned bear" onerror="this.style.visibility='hidden'"></div>
+        </div>
+      </div>
+
+      <!-- Page 6: Heartfelt promise -->
+      <div id="page6" class="page" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;flex-direction:column;">
+          <div class="main-text">Are you still not feeling well, Jaana? 😢💞</div>
+          <div class="sub-text">Give me one more chance… I promise I'll make you feel good 💖🤗</div>
+          <div class="gif"><img src="assets/bear_tender.gif" alt="tender bear" onerror="this.style.visibility='hidden'"></div>
+        </div>
+      </div>
+
+      <!-- Page 7: Envelope / Love Letter -->
+      <div id="page7" class="page" style="display:none;">
+        <div class="envelope-scene">
+          <div class="envelope" id="envelope" aria-label="Tap to open letter">
+            <div class="card-inside" id="cardInside">
+              <!-- letter lines; JS will reveal with typewriter-like fade -->
+              <div class="letter-line" data-text="Never forget you are my everything 💞"></div>
+              <div class="letter-line" data-text="Mera jism te jaan, imaan vi tu"></div>
+              <div class="letter-line" data-text="Mera Rabb, Rasool, Quran vi tu"></div>
+              <div class="letter-line" data-text="Main jaanta hu meri baatein tumhara pain nahi kr payengi…"></div>
+              <div class="letter-line" data-text="Par main har waqt tumhare saath hu 🧸💖"></div>
+              <div class="letter-line" data-text="Agar kabhi bhi mood kharab ho, Be-jhijhak mujhe phone kr ke jo sunana hoga suna dena 💋📞"></div>
+            </div>
+          </div>
+          <div class="tap-hint">Tap the envelope to open</div>
+        </div>
+      </div>
+
+      <!-- Page 8: Sweet Goodbye -->
+      <div id="page8" class="page" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;flex-direction:column;">
+          <div class="main-text sparkle">Okay, Jaana 💕</div>
+          <div class="sub-text">Take care, eat healthy, and stay strong 🌸</div>
+          <div class="sub-text">And remember — you're my forever, my heart, my peace ❤️</div>
+          <div class="gif"><img src="assets/bear_wave2.gif" alt="waving bear" onerror="this.style.visibility='hidden'"></div>
+
+          <div style="margin-top:12px; font-size:13px; color:#6c3550;">💌 Made with endless love by Yatharth 💖</div>
+
+          <div style="margin-top:14px;">
+            <button id="replay" class="small">💞 Replay this card</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Optional background music and tap sound -->
+<audio id="bgm" loop preload="auto" src="assets/music.mp3"></audio>
+<audio id="tapSound" preload="auto" src="assets/chime.mp3"></audio>
+
+<script>
+/* ---------------------------
+   Config & helpers
+   ---------------------------*/
+const pages = ["page1","page2","page3","page4","page5","page6","page7","page8"];
+let current = 0;
+const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+/* Preload images listed in code (optional but recommended) */
+const preloadList = [
+  "assets/bear_wave.gif",
+  "assets/bear_dance.gif",
+  "assets/bear_hug.gif",
+  "assets/bear_concern.gif",
+  "assets/bear_tender.gif",
+  "assets/bear_wave2.gif",
+  "assets/together_photo.jpg",
+  "assets/music.mp3",
+  "assets/chime.mp3"
+];
+preloadList.forEach(src=>{
+  if(!src) return;
+  const ext = src.split('.').pop().toLowerCase();
+  if(["mp3","wav","ogg"].includes(ext)){
+    const a = new Audio(); a.src = src;
+  } else {
+    const i = new Image(); i.src = src;
+  }
+});
+
+/* petal + heart generation */
+function rand(min,max) { return Math.random()*(max-min)+min; }
+
+function createPetals(n=12){
+  for(let i=0;i<n;i++){
+    const p = document.createElement('img');
+    p.className='petal';
+    p.style.left = (rand(2,98)) + 'vw';
+    p.style.width = (rand(10,24)) + 'px';
+    p.src = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path fill='#ffd4e6' d='M12 2s3.5 2 5 4 3 5 0 7-5 4-5 4-1.5-2-5-4-5-4 0-7 5-4 5-4z'/></svg>`);
+    p.style.animationDuration = rand(8,18)+'s';
+    p.style.animationDelay = rand(-6,0)+'s';
+    document.body.appendChild(p);
+  }
+}
+
+function createHearts(n=8){
+  const wrap = document.querySelector('.particle-wrap');
+  for(let i=0;i<n;i++){
+    const h = document.createElement('div');
+    h.className='heart';
+    h.style.left = rand(8,92)+'%';
+    h.style.bottom = rand(-20,10)+'px';
+    h.style.width = rand(12,26)+'px';
+    h.style.height = h.style.width;
+    h.style.backgroundImage = "radial-gradient(circle at 35% 35%, #fff1f6, #ff9fc9)";
+    h.style.borderRadius = '40% 40% 40% 40% / 55% 55% 45% 45%';
+    h.style.opacity = 0;
+    h.style.animationDuration = rand(8,16)+'s';
+    h.style.animationDelay = rand(0,6)+'s';
+    h.style.transform = `translateY(${rand(0,40)}px)`;
+    wrap.appendChild(h);
+  }
+}
+
+/* show page helper */
+function showPage(index){
+  // hide current
+  pages.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = (id === pages[index]) ? "" : "none";
+  });
+  current = index;
+  // animate in primary elements
+  requestAnimationFrame(()=> {
+    const visible = document.getElementById(pages[index]);
+    if(!visible) return;
+    visible.querySelectorAll('.main-text, .sub-text').forEach((el, i)=>{
+      el.classList.remove('show');
+      setTimeout(()=> el.classList.add('show'), 80 + i*160);
+    });
+  });
+}
+
+/* Next tap behaviour for some pages */
+function gotoPage(id){
+  const map = {"yes":2,"no":1}; // yes -> page3 index 2? check: pages array starts page1 index0, page2 index1, page3 index2...
+}
+/* initial show */
+showPage(0);
+createPetals(14);
+createHearts(10);
+
+/* Buttons and basic navigation */
+const btnYes = document.getElementById('btnYes');
+const btnNo = document.getElementById('btnNo');
+
+btnYes.addEventListener('click', ()=> {
+  playTap(); showPage(2); // page3 (index 2)
+});
+btnNo.addEventListener('click', ()=> {
+  playTap(); showPage(1); // page2 (index 1)
+});
+
+/* Tapping a page moves to next step as described:
+  Page 2 -> page4, Page3 -> page4, Page4 -> page5, Page5 Better -> page7, Still -> page6, Page6 -> page7, Page7 envelope -> (open then page8), Page8 -> replay
+*/
+document.getElementById('page2').addEventListener('click', ()=> { playTap(); showPage(3); });
+document.getElementById('page3').addEventListener('click', ()=> { playTap(); showPage(3); });
+document.getElementById('page4').addEventListener('click', ()=> { playTap(); showPage(4); });
+document.getElementById('page5').addEventListener('click', ()=> { /* nothing global */ });
+document.getElementById('btnBetter').addEventListener('click', ()=> { playTap(); showPage(6); }); // index 6 -> page7
+document.getElementById('btnStill').addEventListener('click', ()=> { playTap(); showPage(5); }); // page6 index5
+document.getElementById('page6').addEventListener('click', ()=> { playTap(); showPage(6); });
+
+/* Envelope open + typewriter reveal */
+const envelope = document.getElementById('envelope');
+const cardInside = document.getElementById('cardInside');
+let envelopeOpened = false;
+
+function revealLetterLines(){
+  const lines = cardInside.querySelectorAll('.letter-line');
+  lines.forEach((el, idx)=>{
+    setTimeout(()=>{
+      el.textContent = el.getAttribute('data-text');
+      el.style.opacity = 1;
+      el.style.transform = 'none';
+    }, 350*idx + 300);
+  });
+  // after reveal, allow next tap to go to page8
+  setTimeout(()=> {
+    envelope.addEventListener('click', envelopeToGoodbye, { once: true });
+  }, 350*lines.length + 400);
+}
+
+function envelopeToGoodbye(){
+  playTap();
+  showPage(7); // index 7 -> page8
+}
+
+/* Opening animation */
+envelope.addEventListener('click', function handler(e){
+  if(!envelopeOpened){
+    playTap();
+    envelopeOpened = true;
+    envelope.classList.add('open');
+    // reveal letter gradually
+    revealLetterLines();
+  }
+});
+
+/* Page 8 replay */
+document.getElementById('replay').addEventListener('click', ()=>{
+  playTap();
+  // reset envelope/lines for replay
+  envelope.classList.remove('open');
+  envelopeOpened = false;
+  cardInside.querySelectorAll('.letter-line').forEach(el=>{
+    el.style.opacity = 0; el.style.transform='translateY(6px)'; el.textContent='';
+  });
+  showPage(0);
+});
+
+/* play tap sound and optionally background music */
+function playTap(){
+  const t = document.getElementById('tapSound');
+  if(t){ try{ t.currentTime=0; t.volume = 0.25; t.play().catch(()=>{}); } catch(e){} }
+}
+const bgm = document.getElementById('bgm');
+if(bgm){
+  // start muted; play only on first user interaction to avoid autoplay restrictions
+  const onFirst = ()=>{
+    document.removeEventListener('click', onFirst);
+    document.removeEventListener('touchstart', onFirst);
+    try{ bgm.volume = 0.12; bgm.play().catch(()=>{}); } catch(e){}
+  };
+  document.addEventListener('click', onFirst);
+  document.addEventListener('touchstart', onFirst);
+}
+
+/* Accessibility: keyboard Enter/Space on envelope */
+envelope.tabIndex = 0;
+envelope.addEventListener('keydown', (e)=> {
+  if(e.key === 'Enter' || e.key === ' ') envelope.click();
+});
+
+/* small UX: make entire page1 area clickable to hint/tap */
+document.getElementById('page1').addEventListener('click', function(e){
+  // clicks on buttons handled separately; if clicked outside buttons, do a little bounce
+  if(e.target === this || e.target === document.getElementById('greetWrap')) {
+    // gentle animation
+    document.querySelector('.envelope-scene')?.classList?.remove('pulse');
+  }
+});
+
+/* Optional heart-shaped cursor trail for desktop */
+if(!isTouch){
+  let trail = [];
+  document.addEventListener('mousemove', (e)=>{
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.style.left = (e.clientX + rand(-6,6)) + 'px';
+    heart.style.top = (e.clientY + rand(-6,6)) + 'px';
+    heart.style.position = 'fixed';
+    heart.style.width = '12px';
+    heart.style.height = '12px';
+    heart.style.opacity = 0.9;
+    heart.style.pointerEvents = 'none';
+    heart.style.backgroundImage = "radial-gradient(circle at 35% 35%, #fff1f6, #ff9fc9)";
+    heart.style.borderRadius = '40%';
+    heart.style.transition = 'transform 900ms linear, opacity 900ms linear';
+    document.body.appendChild(heart);
+    setTimeout(()=> {
+      heart.style.transform = 'translateY(-140px) scale(1.2)';
+      heart.style.opacity = 0;
+    },20);
+    setTimeout(()=> heart.remove(), 1100);
+  });
+}
+
+/* Ensure initial animations load nicely */
+window.addEventListener('load', ()=> {
+  // reveal initial texts
+  document.querySelectorAll('#page1 .main-text, #page1 .sub-text').forEach((el,i)=>{
+    setTimeout(()=> el.classList.add('show'), 120 + i*120);
+  });
+});
+</script>
+</body>
+</html>
